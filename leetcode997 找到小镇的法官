@@ -52,3 +52,33 @@ var findJudge = function(N, trust) {
     return index? index : -1;
 };
 
+二、用数组实现graph 数组下标对应节点（小镇上的人） 元素为具有出入度两个属性的对象 法官为出度为0 入度为n-1的人
+var findJudge = function(N, trust) {
+    if(N===1 && trust.length===0) return 1;
+    //构造0-N个节点的图 --》用数组表示
+    //数组下标表示节点 也就是小镇上的人 数组元素用一个对象表示 对象包括出度和入度两个属性
+    //数组有findIndex方法 找出符合内部条件的数组元素的下标
+    let graph = Array.from({length:N+1},()=>({outdegree:0,indegree:0})); //注意这里 箭头函数+对象外面有括号（）
+    trust.map((arr)=>{
+        graph[arr[0]].outdegree++;
+        graph[arr[1]].indegree++;
+    })
+    return graph.findIndex((obj,index)=>{
+        return index!==0 && obj.outdegree===0 && obj.indegree === N-1;
+    })
+};
+三、用数组实现graph 数组元素为该数组下标对应节点的出入度的差值 法官为入出度差值为N-1的人
+var findJudge = function(N, trust) {
+    if(N===1 && trust.length===0) return 1;
+
+    let graph = new Array(N+1).fill(0);
+    trust.map(([a,b])=>{
+        graph[a]--;
+        graph[b]++;
+    })
+    return graph.findIndex((node,index)=>{
+        return index!==0 && node === N-1;
+    })
+};
+
+
