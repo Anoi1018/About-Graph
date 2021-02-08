@@ -33,3 +33,66 @@
   [16, 7,10,11]
 ]
 
+代码示意：
+一、使用辅助二维矩阵tempArr
+原矩阵的一行 对应为辅助矩阵的一列 第一行-倒数第一列 第二行-倒数第二列... 所以matrix[i][j] = tempArr[j][n-i-1] 
+时间复杂度：O（n^2） 空间复杂度：O(n^2)
+/**
+ * @param {number[][]} matrix
+ * @return {void} Do not return anything, modify matrix in-place instead.
+ */
+var rotate = function(matrix) {
+    if(matrix.length<2) return matrix;
+    let n = matrix.length;
+    //注意此处二维数组的构造
+    let tempArr = new Array(n).fill(0).map(()=>new Array(n).fill(0));
+    for(let i = 0;i<n;i++){
+        for(let j=0;j<n;j++){
+            tempArr[j][n-i-1] = matrix[i][j];   //遍历原数组每个元素 将其放置于辅助数组的对应位置
+        }
+    }
+     for(let i = 0;i<n;i++){
+        for(let j=0;j<n;j++){
+            matrix[i][j] = tempArr[i][j];  //将辅助数组 复制到原数组中 实现 数组元素的旋转
+        }
+    }
+
+};
+二、四个为一组完成一轮原地旋转
+探讨元素旋转规律 发现四个为一组可以实现一轮旋转 总共n^2个元素 需要n^/4轮旋转 即需要遍历n/2 * n/2（偶数） 或 (n-1)/2 * (n+1)/2 （奇数）个元素
+时间复杂度:O(n^2) 空间复杂度:O(1)
+var rotate = function(matrix) {
+    if(matrix.length<2) return matrix;
+    let n = matrix.length,temp;//temp用于存储被一开始覆盖掉的元素的值
+  
+    for(let i=0;i<Math.floor(n/2);i++){
+        //注意此处实现了n为奇偶数的统一
+        for(let j=0;j<Math.floor((n+1)/2);j++){ 
+            temp = matrix[i][j];
+            matrix[i][j] = matrix[n-j-1][i];
+            matrix[n-j-1][i] = matrix[n-i-1][n-j-1];
+            matrix[n-i-1][n-j-1] = matrix[j][n-i-1];
+            matrix[j][n-i-1] = temp;
+        }
+    }
+};
+三、用翻转代替旋转
+进一步的 根据元素旋转规律发现 每个元素的下标变化 符合先整体 水平翻转matrix[i][j] ->matrix[n-i-1][j]  + 主对角线对称翻转matrix[n-i-1][j]->matrix[j][n-i-1]
+时间复杂度：O（n^2） 空间复杂度：O（1）
+var rotate = function(matrix) {
+    if(matrix.length<2) return matrix;
+    let n = matrix.length;
+    //水平翻转
+    for(let i=0;i<Math.floor(n/2);i++){
+        for(let j=0;j<n;j++){
+            //注意此处 翻转意味着 两元素交换位置 可以用swap构造函数 也可以用ES6解构
+            [matrix[n-i-1][j],matrix[i][j]] = [matrix[i][j],matrix[n-i-1][j]];
+        }
+    }
+    //主对角线翻转
+    for(let i=0;i<n;i++){
+        for(let j=0;j<i;j++){
+            [matrix[j][i],matrix[i][j]] = [matrix[i][j],matrix[j][i]];
+        }
+    }
+};
