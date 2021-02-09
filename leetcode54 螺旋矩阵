@@ -1,0 +1,91 @@
+54. 螺旋矩阵
+给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+
+示例 1：
+输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+输出：[1,2,3,6,9,8,7,4,5]
+
+示例 2：
+输入：matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+输出：[1,2,3,4,8,12,11,10,9,5,6,7]
+ 
+提示：
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 10
+-100 <= matrix[i][j] <= 100
+
+代码示意：
+一、模拟 + 顺时针转圈                    时间复杂度：O（m*n）空间复杂度：O（m*n）
+<一>思路解析：
+按照顺时针方向遍历数组中的每个元素 将元素添加到结果数组中
+需要解决的关键问题为：
+1、如何表示顺时针上二维数组元素下标的变化？ -->  directions = [[0,1],[1,0],[0,-1],[-1,0]] 右、下、左、上
+2、如何根据方向数组确定下一遍历元素的位置？ -->  directions[directionIndex][0]-->控制row的变化  directions[directionIndex][1]-->控制col的变化
+3、换方向的边界条件？--> row、col的范围 以及 遍历到了已经访问过的元素 --> 建立visited 数组来表示原数组对应位置上元素的被访问情况
+4、遍历的终止条件？ i（遍历过的元素） === m*n 所有元素数目
+
+<二>代码示意：
+var spiralOrder = function(matrix) {
+    if(!matrix || !matrix.length || !matrix[0].length) return matrix;
+    let row = 0,col = 0, m = matrix.length, n =matrix[0].length,total = m*n,ans = [];
+    
+    let visited = new Array(m).fill(0).map(()=>new Array(n).fill(0));
+  
+    let directions = [[0,1],[1,0],[0,-1],[-1,0]]; 
+    let directionIndex=0,nextRow,nextCol;//初始化方向，以及根据当前方向预判的下一元素的行、列坐标
+   
+    for(let i = 0;i<total;i++){
+        ans.push(matrix[row][col]);
+        visited[row][col] = 1;
+
+        nextRow = row + directions[directionIndex][0];
+        nextCol = col + directions[directionIndex][1];
+        
+        if(nextRow <0 || nextRow>m-1 || nextCol<0 || nextCol>n-1 || visited[nextRow][nextCol]){ //换方向的边界条件
+            directionIndex = (++directionIndex) % 4; //换方向
+        }
+        //！！！注意此处 row col 先计算nextRow和nextCol 需要换方向了就调整方向  保证当前方向变化正确
+        //实际更新的是row col 
+        row += directions[directionIndex][0];
+        col += directions[directionIndex][1];
+    }
+    return ans;  
+};
+
+二、模拟 +分圈顺时针              时间复杂度：O（m*n) 空间复杂度:O(1) 除了输出数组 变量占用常数空间
+<一>思路解析
+我们可以将原矩阵按照最外圈 次外圈 直到最内圈来遍历 每一圈采用顺时针的方式 即可得到结果数组
+1、如何分圈？ 找到划定一个圈的边界 即left、right、top、bottom 在分圈注意需要判定边界的合理范围
+2、每个圈如何顺时针？[top,left]（左上角）-->[top,right]（右上角）-->[bottom，right]（右下角） -->[bottom,left]（左下角）
+3、从外圈过度到内圈？ 四个角边界向内缩 top++ left++ right-- bottom--
+4、终止条件？ top === right === bottom === left 表示抵达最内层唯一元素 
+
+<二>代码示意
+var spiralOrder = function(matrix) {
+    if(!matrix || !matrix.length || !matrix[0].length) return matrix;
+    let m = matrix.length, n =matrix[0].length,ans=[],row,col;
+    let left = 0,right = n-1,top = 0, bottom = m-1;//初始最外圈四条线
+    while(left<=right && top<=bottom){//终止条件
+        for(col = left;col<=right;col++){ //注意修改的是row 还是col 
+            ans.push(matrix[top][col]);
+        }
+        for(row = top+1;row<=bottom;row++){
+            ans.push(matrix[row][right]);
+        }
+        if(left<right && top<bottom){ //注意此处需要判断 防止对于单行 单列元素的重复遍历
+            for(col=right-1;col>left;col--){
+             ans.push(matrix[bottom][col]);
+            }
+            for(row=bottom;row>top;row--){
+                ans.push(matrix[row][left]);
+            }
+        }
+        [top,left,bottom,right] = [top+1,left+1,bottom-1,right-1];
+    } 
+    return ans;
+};
+
+
+
+
