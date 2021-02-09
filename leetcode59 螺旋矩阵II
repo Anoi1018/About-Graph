@@ -57,3 +57,21 @@ var generateMatrix = function(n) {
     }
     return matrix;
 };
+
+三、模拟+走完一个方向就更新一个边界
+var generateMatrix = function(n) {
+    if(n===1) return [[1]];
+    let matrix = new Array(n).fill(0).map(()=>new Array(n).fill(0));
+    let left = 0,right = n-1, top = 0, bottom = n-1,count = 1,total = n*n,i;
+    while(count<=total){
+        for( i = left;i<=right;i++) matrix[top][i] = count++; //左->右
+        top++; //相当于去除最上层 更新top边界
+        for( i = top;i<=bottom;i++) matrix[i][right] = count++; //上-》下
+        right--;
+        for( i = right;i>=left;i--) matrix[bottom][i] = count++; //右-》左
+        bottom--;
+        for( i=bottom;i>=top;i--) matrix[i][left] = count++; //下-》上
+        left++;
+    }
+    return matrix;
+};
