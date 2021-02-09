@@ -86,6 +86,37 @@ var spiralOrder = function(matrix) {
     return ans;
 };
 
+三、模拟+更新上下界
+var spiralOrder = function(matrix) {
+    if(!matrix || !matrix.length || !matrix[0].length) return matrix;
+    let m = matrix.length, n =matrix[0].length,ans=[],i;
+    let left = 0,right = n-1,top = 0, bottom = m-1,total = n*m,temp=0;
+    while(temp<total){
+        for( i=left;i<=right && temp<total;i++) { //注意循环条件 temp<total
+            temp++;
+            ans.push(matrix[top][i]);
+        }
+        top++;
+        for( i=top;i<=bottom && temp<total;i++){
+            temp++;
+            ans.push(matrix[i][right]);
+        } 
+        right--;
+      
+        for( i=right;i>=left && temp<total;i--){
+            temp++;
+            ans.push(matrix[bottom][i]);
+        } 
+        bottom--;
+        for( i=bottom;i>=top && temp<total;i--){
+            temp++;
+            ans.push(matrix[i][left]);
+        } 
+        left++;
+    } 
+    return ans;
+};
+
 
 
 
