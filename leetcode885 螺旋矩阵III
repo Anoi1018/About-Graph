@@ -1,0 +1,45 @@
+在 R 行 C 列的矩阵上，我们从 (r0, c0) 面朝东面开始
+
+这里，网格的西北角位于第一行第一列，网格的东南角位于最后一行最后一列。
+现在，我们以顺时针按螺旋状行走，访问此网格中的每个位置。
+每当我们移动到网格的边界之外时，我们会继续在网格之外行走（但稍后可能会返回到网格边界）。
+最终，我们到过网格的所有 R * C 个空间。
+按照访问顺序返回表示网格位置的坐标列表。
+
+示例 1：
+输入：R = 1, C = 4, r0 = 0, c0 = 0
+输出：[[0,0],[0,1],[0,2],[0,3]]
+
+参考题解：
+https://blog.csdn.net/MrDing_CoolPig/article/details/105513788
+
+代码示意：
+与之前的不同点是这个是小螺旋，宽度一步步增大
+先不考虑步数如何行走 考虑步数的变化
+1  1  2  2  3  3  4  4 5  5
+东 南 西 北 东 南 西 北 东 南
+
+var spiralMatrixIII = function(R, C, r0, c0) {
+    let  ans =[];
+    if(R ===0 || C===0  ) return ans;
+    let directions = [[0,1],[1,0],[0,-1],[-1,0]]; //方向数组
+    let count = 0,k=1,total = R * C;
+    ans.push([r0,c0]),count++;
+   
+    while(count < total){
+        for(let directionsIndex =0 ;directionsIndex<4;directionsIndex++){ //外层循环控制四个方向 东 南 西 北
+            for(let step = 0;step<k;step++){ //内层循环控制每个方向上行走的步数 由k决定
+                r0 += directions[directionsIndex][0];
+                c0 += directions[directionsIndex][1];
+                if(r0>=0 && r0<R && c0>=0 && c0<C){
+                    ans.push([r0,c0]);
+                    count++;
+                }
+            }
+            if(directionsIndex === 1) k++; //走完南方向后 k+1
+        }
+        k++; //走完四个方向后 k+1
+    }
+    return ans;
+};
+
